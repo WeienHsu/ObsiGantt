@@ -29,6 +29,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false],"new-note-folder":"Gantt Board Template/Notes"}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false],"new-note-folder":"ObsiGantt/Notes"}
 ```
 %%

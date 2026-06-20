@@ -1,4 +1,4 @@
-# 📊 Gantt Board Template
+# 📊 ObsiGantt
 
 一套用 **Obsidian Kanban + Dataview** 打造的年度任務甘特圖。
 看板負責記任務，`Gantt View.md` 把所有看板的任務畫成一張時間軸。
@@ -22,7 +22,7 @@
 
 ## 2. 安裝（複製整包）
 
-1. 把整個 `Gantt Board Template` 資料夾**複製**到你的 vault 任意位置。
+1. 把整個 `ObsiGantt` 資料夾**複製**到你的 vault 任意位置。
 2. **改名**成你的專案名稱（例如 `My Project`）—— 怎麼改都行，
    `Gantt View.md` 會**自動偵測**自己所在的資料夾，不必改任何設定。
 3. 打開 `Gantt View.md`，切到閱讀模式，應該就看到甘特圖了。
