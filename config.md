@@ -15,7 +15,9 @@ tags:
 {
   "root_folder": "",
 
-  "board_abbrev": {},
+  "board_abbrev": {
+    "Template": "ChangeProjectName"
+    },
 
   "priority_emoji": {
     "high": "🔴",
