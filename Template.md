@@ -15,6 +15,12 @@ kanban-plugin: board
 
 ## To Do
 
+- [ ] [title:: Task1]
+	describe something...
+	[start:: 2026-07-01]
+	[due:: 2026-07-25]
+	[priority:: ]
+	[type:: ]
 
 
 ## In Progress
