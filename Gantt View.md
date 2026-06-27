@@ -114,12 +114,13 @@ const normalizeStatus = (heading) => {
     const s = (heading ?? '').toLowerCase().replace(/[\s_-]/g, '');
     if (s === 'inprogress')              return 'In Progress';
     if (s === 'todo')                    return 'To Do';
+    if (s === 'awaitingrelease')         return 'Awaiting Release';
     if (s === 'done')                    return 'Done';
     if (s === 'archive' || s === 'archived') return 'Archive';
     return 'Backlog';
 };
 
-const STATUS_ORDER = ['In Progress', 'To Do', 'Backlog', 'Done'];
+const STATUS_ORDER = ['In Progress', 'To Do', 'Backlog', 'Awaiting Release', 'Done'];
 const byStatus = Object.fromEntries(STATUS_ORDER.map(s => [s, []]));
 let taskCount = 0;
 const unscheduled = [];
@@ -147,7 +148,7 @@ for (const board of boards) {
             if (task.completed) continue;
             const abbrev  = boardAbbrev(board.file.name);
             const status  = normalizeStatus(task.section?.subpath);
-            if (status === 'Done' || status === 'Archive') continue;
+            if (status === 'Done' || status === 'Archive' || status === 'Awaiting Release') continue;
             const customTitle = extractTitle(task.text);
             const uType    = TYPE_CONFIG[(task.type ?? '').toString().toLowerCase().trim()];
             const baseText = (customTitle ? sanitize(customTitle) : sanitize(task.text))
@@ -176,7 +177,7 @@ for (const board of boards) {
         const typeKey   = (task.type ?? '').toString().toLowerCase().trim();
         const typeCfg   = TYPE_CONFIG[typeKey] ?? null;
         const typeEmoji = typeCfg?.emoji ?? '';
-        const isDone    = task.completed || status === 'Done';
+        const isDone    = task.completed || status === 'Done' || status === 'Awaiting Release';
         const isOverdue = !isDone && !!task.due && task.due < today;
         const isActive  = !isDone && !isOverdue && !!task.start && task.start <= today;
         const label     = `${typeEmoji}${prioEmoji}[${abbrev}] ${taskPart}`.trim();
