@@ -314,7 +314,9 @@ if (taskCount === 0) {
     const el = dv.container.createEl('div');
     el.innerHTML = html;
 
-    // ── 浮動 tooltip（事件代理，避免 refresh 累積 listener）──
+    // ── 浮動提示卡（桌機 hover / 手機兩步點按共用）─────────
+    // tt 掛在 body 並跨 Dataview refresh 重用；狀態存在 tt 節點上，
+    // 避免每次 refresh 重複累積全域 listener。
     let tt = document.getElementById('dvg-tip');
     if (!tt) {
         const gs = document.createElement('style');
@@ -330,9 +332,11 @@ if (taskCount === 0) {
         document.body.appendChild(tt);
     }
 
-    el.addEventListener('mouseover', (e) => {
-        const bar = e.target.closest('.dvg-bar');
-        if (!bar) return;
+    // 每次 render 先歸零：清掉可能殘留的卡片與 armed 節點
+    const hideTip = () => { tt.style.display = 'none'; tt._armedBar = null; };
+    hideTip();
+
+    const showTip = (bar) => {
         const summaryLine = bar.dataset.summary
             ? `<div style="color:var(--text-muted);margin-top:3px;font-style:italic">${bar.dataset.summary}</div>` : '';
         const typeLine = bar.dataset.type
@@ -351,19 +355,54 @@ if (taskCount === 0) {
         if (top < 8) top = r.bottom + 8;
         tt.style.left = left + 'px';
         tt.style.top  = top  + 'px';
-    });
+    };
 
-    el.addEventListener('mouseout', (e) => {
-        if (!e.target.closest('.dvg-bar')) return;
-        tt.style.display = 'none';
-    });
-
-    el.addEventListener('click', (e) => {
-        const bar = e.target.closest('.dvg-bar');
-        if (!bar || !bar.dataset.board) return;
+    // 跳轉前一定先收卡片，避免 body 層級的浮動卡片飄到新畫面上殘留
+    const navigate = (bar) => {
+        hideTip();
+        if (!bar.dataset.board) return;
         const anchor = bar.dataset.section ? `#${bar.dataset.section}` : '';
         app.workspace.openLinkText(`${bar.dataset.board}${anchor}`, '', false);
+    };
+
+    // 桌機：滑鼠 / 觸控筆 hover 顯示、離開隱藏（觸控不走這條路）
+    el.addEventListener('pointerover', (e) => {
+        if (e.pointerType === 'touch') return;
+        const bar = e.target.closest('.dvg-bar');
+        if (bar) showTip(bar);
     });
+    el.addEventListener('pointerout', (e) => {
+        if (e.pointerType === 'touch') return;
+        if (e.target.closest('.dvg-bar')) hideTip();
+    });
+
+    // 啟用：桌機點一下直接跳；手機第一點顯示卡片、第二點同一條才跳
+    el.addEventListener('click', (e) => {
+        const bar = e.target.closest('.dvg-bar');
+        if (!bar) return;
+        if (tt._lastPointerType === 'touch') {
+            if (tt._armedBar === bar) {   // 第二次點同一條 → 跳轉
+                navigate(bar);
+            } else {                      // 第一次點 → 只顯示卡片，先不跳
+                showTip(bar);
+                tt._armedBar = bar;
+            }
+        } else {
+            navigate(bar);               // 滑鼠 / 觸控筆：維持原本一點即跳
+        }
+    });
+
+    // 全域 listener 只綁一次（首次 render 綁定，之後 refresh 重用同一個 tt）
+    if (!tt._dvgGlobalBound) {
+        tt._dvgGlobalBound = true;
+        document.addEventListener('touchstart', () => { tt._lastPointerType = 'touch'; }, true);
+        document.addEventListener('pointerdown', (e) => {
+            tt._lastPointerType = e.pointerType || 'mouse';
+            // 點在長條以外 → 收起卡片（手機點空白處即可關閉）
+            if (!e.target.closest('.dvg-bar')) hideTip();
+        }, true);
+        window.addEventListener('scroll', () => hideTip(), true);
+    }
 }
 
 // ── 未排程任務清單 ───────────────────────────────────
@@ -395,8 +434,9 @@ if (unscheduled.length > 0) {
 > **優先度**：`[priority:: High]` 🔴　`[priority:: Medium]` 🟡　`[priority:: Low]` 🟢
 > **分類**：`[type:: bug]` 🐛　`feature` ✨　`release` 🚀　`research` 🔬　`review` 🍰
 > 　（顯示為標籤 emoji + 長條左側色邊；分類清單在 `config.md` 的 `type_config` 自訂）
-> **摘要**：卡片內文「第一行」會顯示在滑鼠 tooltip 標題下方（淡色斜體）
+> **摘要**：卡片內文「第一行」會顯示在提示卡標題下方（淡色斜體）
 > 　想要摘要 → 卡片第二行（標題下一行）寫一句話；不想要 → 留空白，或讓 `[type::]` 等欄位接在標題後
+> **點長條**：電腦 = 滑鼠移上去看提示卡、點一下跳到看板；手機 = 先點一下看提示卡、再點同一條才跳（點空白處收起卡片）
 > **紅色 bar** = 過期未完成任務
 ## Template
 [title:: ]
