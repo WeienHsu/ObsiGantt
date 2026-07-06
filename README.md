@@ -50,6 +50,14 @@
 - 只有填了 `start` 或 `due` 的任務才會進時間軸；沒日期的會列在下方「未排程」。
 - **卡片/標題下一行（需縮排）**：可寫一行簡短的任務摘要。這行文字會直接**顯示在 Kanban 看板卡片上**，同時在 `Gantt View` 甘特圖中，當滑鼠懸停在該任務長條上時，會作為 **tooltip 懸浮提示**顯示。
 
+### 看板欄位（狀態流）
+`Backlog → To Do → In Progress → Awaiting Release → Done`
+
+- **Awaiting Release**：你這邊已完成、但還在等專案方／他人 release 上線時，把卡片拖到這一欄。
+  代表「我已做完、單純等釋出」的中間狀態。
+- 注意：這是**狀態**，用欄位表達；`type`（bug / feature…）是**種類**，兩者不要混用。
+  卡片移到「待更新」時，`type` 維持原本的值即可。
+
 ### 設定年份
 打開 `Gantt View.md` 的 Properties，改 `year`（留空 = 今年）。
 想同時看多年 → 複製 `Gantt View.md` 成 `Gantt View-2027.md`，各自設 `year`。

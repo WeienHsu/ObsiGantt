@@ -27,6 +27,10 @@ kanban-plugin: board
 
 
 
+## Awaiting Release
+
+
+
 ## Done
 
 
@@ -35,6 +39,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false],"new-note-folder":"ObsiGantt/Notes"}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false,false],"new-note-folder":"ObsiGantt/Notes"}
 ```
 %%
